@@ -2,7 +2,7 @@ mod discover;
 mod transcode;
 
 
-use crate::discover::find_all_music;
+use crate::discover::find_music;
 use crate::transcode::transcode_file;
 use std::{
     path::PathBuf,
@@ -19,7 +19,8 @@ fn main() {
     let options = get_options();
 
     // Find all files in the given directory
-    let files = find_all_music(&options.input);
+    println!("Locating music files. This may take a moment...");
+    let files = find_music(&options.input);
 
     // Set up the progress bar
     let progress_bar = ProgressBar::new(files.len() as u64)
