@@ -12,7 +12,7 @@ use std::{
 use regex::Regex;
 use structopt::StructOpt;
 use rayon::prelude::*;
-use indicatif::{ProgressBar, ParallelProgressIterator};
+use indicatif::{ProgressBar, ProgressStyle, ParallelProgressIterator};
 
 
 fn main() {
@@ -22,7 +22,10 @@ fn main() {
     let files = find_all_music(&options.input);
 
     // Set up the progress bar
-    let progress_bar = ProgressBar::new(files.len() as u64);
+    let progress_bar = ProgressBar::new(files.len() as u64)
+        .with_style(ProgressStyle::default_bar().template(
+            "[{pos}/{len} ({percent}%)] {wide_bar} [ETA: {eta}, {per_sec}]"
+        ));
 
     files.par_iter()
         .progress_with(progress_bar)
