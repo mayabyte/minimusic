@@ -39,17 +39,17 @@ fn get_options() -> Options {
     // Check that the supplied codec is supported by the local installation of ffmpeg
     options.output_codec.make_ascii_lowercase();
     let output = Command::new("ffmpeg")
-        .arg("-codecs")
+        .arg("-encoders")
         .output()
         .expect("Couldn't call ffmpeg. Is it installed?");
     let output = String::from_utf8_lossy(output.stdout.as_slice()).to_string();
-    let codec_re = Regex::new(r".EA...\s+[[:word:]]+").unwrap();
+    let codec_re = Regex::new(r"A.....\s+[[:word:]]+").unwrap();
     let supported_codecs: Vec<&str> = output.lines()
         .filter(|line| codec_re.is_match(line))
         .filter_map(|line| line.trim().split_whitespace().nth(1))
         .collect();
     if !supported_codecs.contains(&options.output_codec.as_str()) {
-        eprintln!("Error: codec \"{}\" not recognized by ffmpeg. Run \"ffmpeg -codecs\" to see the list of supported codecs.",
+        eprintln!("Error: encoder \"{}\" not recognized by ffmpeg. Run \"ffmpeg -encoders\" to see the list of supported codecs.",
             options.output_codec);
         exit(1);
     }
@@ -98,5 +98,12 @@ pub struct Options {
         short, long,
         help = "The file extension to be used for transcoded music files."
     )]
-    pub extension: String
+    pub extension: String,
+
+    #[structopt(
+        short, long,
+        default_value = "320k",
+        help = "The bitrate with which to encode."
+    )]
+    pub bitrate: String
 }

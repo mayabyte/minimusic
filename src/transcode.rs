@@ -8,7 +8,7 @@ use std::{
 
 pub fn transcode_file(options: &Options, input_filename: &Path) {
     let output_filename = produce_output_filename(options, input_filename);
-    transcode(input_filename, &output_filename, &options.output_codec);
+    transcode(input_filename, &output_filename, &options.output_codec, &options.bitrate);
 }
 
 fn produce_output_filename(options: &Options, input_filename: &Path) -> PathBuf {
@@ -22,7 +22,7 @@ fn produce_output_filename(options: &Options, input_filename: &Path) -> PathBuf 
     output_filename
 }
 
-fn transcode(file: &Path, dest: &Path, codec: &str) {
+fn transcode(file: &Path, dest: &Path, codec: &str, bitrate: &str) {
     match Command::new("ffmpeg")
         .stdout(Stdio::null())
         .stderr(Stdio::null())
@@ -30,6 +30,8 @@ fn transcode(file: &Path, dest: &Path, codec: &str) {
         .arg(file)
         .arg("-c:a")
         .arg(codec)
+        .arg("-b:a")
+        .arg(bitrate)
         .arg(dest)
         .output()
     {
